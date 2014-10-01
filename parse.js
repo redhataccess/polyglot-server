@@ -49,8 +49,9 @@ function parseFile(file, lang) {
     });
     return deferred.promise;
 }
+var DATA_DIR = (process.env.OPENSHIFT_DATA_DIR ? (process.env.OPENSHIFT_DATA_DIR) : './') + 'messages/';
 
-glob('./*.properties', function(err, files) {
+glob(DATA_DIR + '**/*.properties', function(err, files) {
     if (err) {
         return console.error(err);
     }
