@@ -24,7 +24,7 @@ if ('development' === app.get('env')) {
 var message = require('./resources/message.js');
 app.post('/', message.fetch);
 
-var UPLOAD_PATH = process.env.OPENSHIFT_APP_UUID || '/upload';
+var UPLOAD_PATH = '/' + (process.env.OPENSHIFT_APP_UUID || 'upload');
 var DATA_DIR = process.env.OPENSHIFT_DATA_DIR ? (process.env.OPENSHIFT_DATA_DIR + 'messages/') : '/messages/';
 app.post(UPLOAD_PATH, function(req, res) {
     var fstream;
