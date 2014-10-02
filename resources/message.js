@@ -36,15 +36,18 @@ exports.fetch = function(req, res) {
         'Expires': new Date(Date.now() + 3600000).toUTCString()
     };
     var lang = 'en',
-        keys;
+        keys,
+        pretty = false;
     if (req._body) {
         if (Array.isArray(req.body)) {
             keys = req.body;
         } else {
             lang = req.body.lang;
             keys = req.body.keys;
+            pretty = (req.body.pretty === 'true');
         }
     } else {
+        pretty = (req.query.pretty === 'true');
         lang = req.query.lang || lang;
         keys = req.query.keys.split(',');
     }
@@ -60,7 +63,7 @@ exports.fetch = function(req, res) {
     query.key.$in.sort();
     var reqHash = crypto.createHash('md5').update(JSON.stringify(query)).digest('hex');
     var cachedData = cache.get(reqHash);
-    if (cachedData && req.get('Cache-Control') !== 'no-cache') {
+    if (cachedData && req.get('Cache-Control') !== 'no-cache' && !pretty) {
         res.set(cacheHeaders);
         return res.send(cachedData);
     }
@@ -75,7 +78,12 @@ exports.fetch = function(req, res) {
             messages = formatResults(messages);
             cache.put(reqHash, messages);
             res.set(cacheHeaders);
-            res.send(messages);
+            if (pretty) {
+                res.set('Content-Type', 'application/json');
+                res.send(JSON.stringify(messages, undefined, '\t'));
+            } else {
+                res.json(messages);
+            }
         }
     });
 };
