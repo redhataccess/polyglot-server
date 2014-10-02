@@ -5,6 +5,9 @@ var cache = require('memory-cache');
 var exec = require('child_process').exec;
 var _ = require('lodash-node');
 
+var ONE_HOUR_SEC = 3600,
+    ONE_HOUR_MS = ONE_HOUR_SEC * 1000;
+
 var hydrateRegexes = function($in) {
     var endsWithStar = /\*$/;
     for (var i = 0; i < $in.length; i++) {
@@ -30,15 +33,16 @@ var formatResults = function(results) {
 
 exports.fetch = function(req, res) {
     var cacheHeaders = {
-        'Cache-Control': 'public, max-age=3600',
+        'Cache-Control': 'public, max-age=' + ONE_HOUR_SEC,
         'Access-Control-Allow-Origin': '*',
         'Date': new Date(Date.now()).toUTCString(),
-        'Expires': new Date(Date.now() + 3600000).toUTCString()
+        'Expires': new Date(Date.now() + ONE_HOUR_MS).toUTCString()
     };
     var lang = 'en',
         keys,
         pretty = false;
     if (req._body) {
+        // RESPONDING TO POST
         if (Array.isArray(req.body)) {
             keys = req.body;
         } else {
@@ -47,6 +51,7 @@ exports.fetch = function(req, res) {
             pretty = (req.body.pretty === 'true');
         }
     } else {
+        // RESPONDING TO GET
         pretty = (req.query.pretty === 'true');
         lang = req.query.lang || lang;
         keys = req.query.keys.split(',');
