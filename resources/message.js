@@ -51,9 +51,12 @@ exports.fetch = function(req, res) {
         }
     } else {
         // RESPONDING TO GET
+        lang = decodeURIComponent(req.query.lang || lang);
+        keys = decodeURIComponent(req.query.keys);
         pretty = (req.query.pretty === 'true');
         lang = req.query.lang || lang;
         keys = req.query.keys.split(',');
+
     }
     var query = {
         lang: {
