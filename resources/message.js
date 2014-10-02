@@ -5,32 +5,44 @@ var cache = require('memory-cache');
 var exec = require('child_process').exec;
 
 exports.fetch = function(req, res) {
-    if (!req.body) {
-        return res.json({
-            'message': 'no body provided'
-        });
-    }
-    var query = {};
-    if (Array.isArray(req.body)) {
-        query.lang = 'en';
-        query.key = {
-            $in: req.body
-        };
+    var cacheHeaders = {
+        'Cache-Control': 'public, max-age=3600',
+        'Access-Control-Allow-Origin': '*',
+        'Date': new Date(Date.now()).toUTCString(),
+        'Expires': new Date(Date.now() + 3600000).toUTCString()
+    };
+    var lang = 'en',
+        keys;
+    if (req._body) {
+        if (Array.isArray(req.body)) {
+            keys = req.body;
+        } else {
+            lang = req.body.lang;
+            keys = req.body.keys;
+        }
     } else {
-        query.lang = req.body.lang;
-        query.key = {
-            $in: req.body.keys
-        };
+        lang = req.query.lang || lang;
+        keys = req.query.keys.split(',');
     }
+    var query = {
+        lang: lang,
+        key: {
+            $in: keys
+        }
+    };
     // Sorting to ensure requests with different order will give same hash.
     query.key.$in.sort();
     var reqHash = crypto.createHash('md5').update(JSON.stringify(query)).digest('hex');
     var cachedData = cache.get(reqHash);
-    if (cachedData && req.get('If-None-Match') === reqHash) {
-        console.log('304!!!');
-    }
     if (cachedData) {
+        res.set(cacheHeaders);
         return res.send(cachedData);
+    }
+    var endsWithStar = /\*$/;
+    for (var i = 0; i < query.key.$in.length; i++) {
+        if (endsWithStar.test(query.key.$in[i])) {
+            query.key.$in[i] = new RegExp(query.key.$in[i]);
+        }
     }
 
     Message.find(query, '-_id', function(err, data) {
@@ -38,11 +50,7 @@ exports.fetch = function(req, res) {
             res.send(err);
         } else {
             cache.put(reqHash, data);
-            res.set({
-                'Cache-Control': 'public, max-age=3600',
-                'Access-Control-Allow-Origin': '*',
-                'ETag': reqHash
-            });
+            res.set(cacheHeaders);
             res.send(data);
         }
     });
