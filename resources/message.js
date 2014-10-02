@@ -3,6 +3,30 @@ var Message = mongoose.model('Message');
 var crypto = require('crypto');
 var cache = require('memory-cache');
 var exec = require('child_process').exec;
+var _ = require('lodash-node');
+
+var hydrateRegexes = function($in) {
+    var endsWithStar = /\*$/;
+    for (var i = 0; i < $in.length; i++) {
+        if (endsWithStar.test($in[i])) {
+            $in[i] = new RegExp($in[i]);
+        }
+    }
+};
+
+var formatResults = function(results) {
+    var flatten = function(value) {
+        var obj = {};
+        obj[value.key] = value.value;
+        return obj;
+    };
+    results = _.groupBy(results, 'lang');
+
+    for (var lang in results) {
+        results[lang] = _.map(results[lang], flatten);
+    }
+    return results;
+};
 
 exports.fetch = function(req, res) {
     var cacheHeaders = {
@@ -25,7 +49,9 @@ exports.fetch = function(req, res) {
         keys = req.query.keys.split(',');
     }
     var query = {
-        lang: lang,
+        lang: {
+            $in: lang.split(',')
+        },
         key: {
             $in: keys
         }
@@ -34,24 +60,22 @@ exports.fetch = function(req, res) {
     query.key.$in.sort();
     var reqHash = crypto.createHash('md5').update(JSON.stringify(query)).digest('hex');
     var cachedData = cache.get(reqHash);
-    if (cachedData) {
+    if (cachedData && req.get('Cache-Control') !== 'no-cache') {
         res.set(cacheHeaders);
         return res.send(cachedData);
     }
-    var endsWithStar = /\*$/;
-    for (var i = 0; i < query.key.$in.length; i++) {
-        if (endsWithStar.test(query.key.$in[i])) {
-            query.key.$in[i] = new RegExp(query.key.$in[i]);
-        }
-    }
+    hydrateRegexes(query.key.$in);
+    hydrateRegexes(query.lang.$in);
 
-    Message.find(query, '-_id', function(err, data) {
+
+    Message.find(query, '-_id').lean().exec(function(err, messages) {
         if (err) {
             res.send(err);
         } else {
-            cache.put(reqHash, data);
+            messages = formatResults(messages);
+            cache.put(reqHash, messages);
             res.set(cacheHeaders);
-            res.send(data);
+            res.send(messages);
         }
     });
 };
