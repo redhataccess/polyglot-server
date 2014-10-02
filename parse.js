@@ -57,7 +57,7 @@ glob(DATA_DIR + '**/*.properties', function(err, files) {
     if (err) {
         return console.error(err);
     }
-    var langRegEx = /\.\/messages_(\w{2,5})/;
+    var langRegEx = /\/messages_(\w{2,5})/;
     files.forEach(function(file) {
         var lang = 'en';
         var matches = file.match(langRegEx);

@@ -26,6 +26,9 @@ exports.fetch = function(req, res) {
     query.key.$in.sort();
     var reqHash = crypto.createHash('md5').update(JSON.stringify(query)).digest('hex');
     var cachedData = cache.get(reqHash);
+    if (cachedData && req.get('If-None-Match') === reqHash) {
+        console.log('304!!!');
+    }
     if (cachedData) {
         return res.send(cachedData);
     }
@@ -35,6 +38,11 @@ exports.fetch = function(req, res) {
             res.send(err);
         } else {
             cache.put(reqHash, data);
+            res.set({
+                'Cache-Control': 'public, max-age=3600',
+                'Access-Control-Allow-Origin': '*',
+                'ETag': reqHash
+            });
             res.send(data);
         }
     });
