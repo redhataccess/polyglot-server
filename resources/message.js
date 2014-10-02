@@ -18,15 +18,14 @@ var hydrateRegexes = function($in) {
 };
 
 var formatResults = function(results) {
-    var flatten = function(value) {
-        var obj = {};
-        obj[value.key] = value.value;
-        return obj;
-    };
     results = _.groupBy(results, 'lang');
 
     for (var lang in results) {
-        results[lang] = _.map(results[lang], flatten);
+        var langObj = {};
+        _.forEach(results[lang], function(value) {
+            langObj[value.key] = value.value;
+        });
+        results[lang] = langObj;
     }
     return results;
 };
