@@ -4,7 +4,7 @@
 
 var properties = require('properties');
 var glob = require('glob');
-require('../lib/db');
+require('./lib/db');
 var Q = require('q');
 var cache = require('memory-cache');
 
