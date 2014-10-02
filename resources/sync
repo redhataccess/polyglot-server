@@ -1,5 +1,4 @@
 #!/bin/bash
-
 mkdir -p ${OPENSHIFT_DATA_DIR}messages
 cd ${OPENSHIFT_DATA_DIR}messages
 rm -rf core
@@ -8,3 +7,5 @@ tar xzf messages.tar.gz
 
 cd $OPENSHIFT_REPO_DIR
 node parse.js
+
+rm -rf messages.tar.gz

@@ -40,7 +40,7 @@ app.post(UPLOAD_PATH, function(req, res) {
     });
 });
 
-app.get(UPLOAD_PATH, message.flush);
+app.purge(UPLOAD_PATH, message.sync);
 
 app.all('/*', function(req, res) {
     res.redirect('https://access.redhat.com/home');

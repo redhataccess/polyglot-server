@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var Message = mongoose.model('Message');
 var crypto = require('crypto');
 var cache = require('memory-cache');
+var exec = require('child_process').exec;
 
 exports.fetch = function(req, res) {
     if (!req.body) {
@@ -39,8 +40,15 @@ exports.fetch = function(req, res) {
     });
 };
 
-exports.flush = function(req, res) {
-    cache.clear();
+exports.sync = function(req, res) {
+    exec(__dirname + '/sync',
+        function(error, stdout, stderr) {
+            console.log('stdout: ' + stdout);
+            console.log('stderr: ' + stderr);
+            if (error !== null) {
+                console.log('exec error: ' + error);
+            }
+        });
     res.json({
         'status': 'ok'
     });

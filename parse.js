@@ -6,6 +6,7 @@ var properties = require('properties');
 var glob = require('glob');
 require('../lib/db');
 var Q = require('q');
+var cache = require('memory-cache');
 
 var Message = require('mongoose').model('Message');
 
@@ -24,6 +25,7 @@ function storeMessages() {
                 return;
             }
             console.log('Collection saved!');
+            cache.clear();
             process.exit(0);
         });
     });
