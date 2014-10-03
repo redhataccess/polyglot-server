@@ -25,24 +25,6 @@ var message = require('./resources/message.js');
 app.post('/', message.fetch);
 app.get('/', message.fetch);
 
-var UPLOAD_PATH = '/' + (process.env.OPENSHIFT_APP_UUID || 'upload');
-var DATA_DIR = process.env.OPENSHIFT_DATA_DIR ? (process.env.OPENSHIFT_DATA_DIR + 'messages/') : (__dirname + '/messages/');
-app.post(UPLOAD_PATH, function(req, res) {
-    var fstream;
-    req.pipe(req.busboy);
-    req.busboy.on('file', function(fieldname, file, filename) {
-        fstream = fs.createWriteStream(DATA_DIR + filename);
-        file.pipe(fstream);
-        fstream.on('close', function() {
-            res.json({
-                'status': 'ok'
-            });
-        });
-    });
-});
-
-app.purge(UPLOAD_PATH, message.sync);
-
 app.all('/*', function(req, res) {
     res.redirect('https://access.redhat.com/home');
 });
