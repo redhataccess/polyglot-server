@@ -81,10 +81,11 @@ define('polyglot', ['jquery'], function($) {
     Polyglot.prototype.t = function(keys, lang) {
         lang = _normalizeLang(lang);
         keys = _sortKeys(keys);
-        if (!this._fetchDfds[keys]) {
-            this._fetchDfds[keys] = this._fetch(keys, lang);
+        var hash = lang + '_' + keys;
+        if (!this._fetchDfds[hash]) {
+            this._fetchDfds[hash] = this._fetch(keys, lang);
         }
-        return this._fetchDfds[keys];
+        return this._fetchDfds[hash];
     };
 
     Polyglot.prototype._fetch = function(keys, lang) {
@@ -151,26 +152,4 @@ define('polyglot', ['jquery'], function($) {
     };
 
     return Polyglot.getInstance();
-});
-
-
-
-require.config({
-    paths: {
-        'jquery': '//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min'
-    }
-});
-
-require(['polyglot'], function(P) {
-    P.t('403.*,401.*').then(function(vals) {
-        console.log(vals);
-    });
-    P.t('401.*,403.*').then(function(vals) {
-        console.log(vals);
-    });
-
-    P.t('browse.*').then(function(vals) {
-        console.log(vals);
-    });
-
 });
