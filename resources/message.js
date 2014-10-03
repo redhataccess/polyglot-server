@@ -5,8 +5,10 @@ var cache = require('memory-cache');
 var exec = require('child_process').exec;
 var _ = require('lodash-node');
 
-var ONE_HOUR_SEC = 3600,
-    ONE_HOUR_MS = ONE_HOUR_SEC * 1000;
+var ONE_HOUR_SEC = (60 * 60),
+    ONE_HOUR_MS = (ONE_HOUR_SEC * 1000),
+    ONE_MONTH_SEC = (60 * 60 * 24 * 30),
+    ONE_MONTH_MS = (ONE_MONTH_SEC * 1000);
 
 var hydrateRegexes = function($in) {
     var endsWithStar = /\*$/;
@@ -30,13 +32,26 @@ var formatResults = function(results) {
     return results;
 };
 
-exports.fetch = function(req, res) {
-    var cacheHeaders = {
-        'Cache-Control': 'public, max-age=' + ONE_HOUR_SEC,
+var addCacheHeaders = function(req, res, cacheHit) {
+    var cc = ONE_HOUR_SEC,
+        expires = ONE_HOUR_MS;
+
+    if (req.query && req.query.v) {
+        // Much longer cache if version was provided
+        cc = ONE_MONTH_SEC;
+        expires = ONE_MONTH_MS;
+    }
+    res.set({
+        'Cache-Control': 'public, max-age=' + cc,
         'Access-Control-Allow-Origin': '*',
         'Date': new Date(Date.now()).toUTCString(),
-        'Expires': new Date(Date.now() + ONE_HOUR_MS).toUTCString()
-    };
+        'Expires': new Date(Date.now() + expires).toUTCString()
+    });
+    res.set('X-Cache', cacheHit ? 'HIT' : 'MISS');
+};
+
+exports.fetch = function(req, res) {
+
     var lang = 'en',
         keys,
         pretty = false;
@@ -70,8 +85,9 @@ exports.fetch = function(req, res) {
     query.key.$in.sort();
     var reqHash = crypto.createHash('md5').update(JSON.stringify(query)).digest('hex');
     var cachedData = cache.get(reqHash);
+    debugger;
     if (cachedData && req.get('Cache-Control') !== 'no-cache' && !pretty) {
-        res.set(cacheHeaders);
+        addCacheHeaders(req, res, true);
         return res.send(cachedData);
     }
     hydrateRegexes(query.key.$in);
@@ -83,14 +99,14 @@ exports.fetch = function(req, res) {
             res.send(err);
         } else {
             messages = formatResults(messages);
-            cache.put(reqHash, messages);
-            res.set(cacheHeaders);
+            addCacheHeaders(req, res, false);
             if (pretty) {
                 res.set('Content-Type', 'application/json; charset=utf-8');
                 res.send(JSON.stringify(messages, undefined, '\t'));
             } else {
                 res.json(messages);
             }
+            cache.put(reqHash, messages);
         }
     });
 };
