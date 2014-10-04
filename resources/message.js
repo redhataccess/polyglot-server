@@ -42,10 +42,10 @@ var addCacheHeaders = function(req, res, cacheHit) {
         expires = ONE_MONTH_MS;
     }
     res.set({
-        'Cache-Control': 'public, max-age=' + cc,
+        //'Cache-Control': 'public, max-age=' + cc,
         'Access-Control-Allow-Origin': '*',
-        'Date': new Date(Date.now()).toUTCString(),
-        'Expires': new Date(Date.now() + expires).toUTCString()
+        //'Date': new Date(Date.now()).toUTCString(),
+        //'Expires': new Date(Date.now() + expires).toUTCString()
     });
     res.set('X-Cache', cacheHit ? 'HIT' : 'MISS');
 };
@@ -83,9 +83,9 @@ exports.fetch = function(req, res) {
     };
     // Sorting to ensure requests with different order will give same hash.
     query.key.$in.sort();
+    query.lang.$in.sort();
     var reqHash = crypto.createHash('md5').update(JSON.stringify(query)).digest('hex');
     var cachedData = cache.get(reqHash);
-    debugger;
     if (cachedData && req.get('Cache-Control') !== 'no-cache' && !pretty) {
         addCacheHeaders(req, res, true);
         return res.send(cachedData);
