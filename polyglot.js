@@ -1,6 +1,6 @@
 /* globals define */
 
-define('polyglot', ['jquery'], function($) {
+define(['jquery', 'moment'], function($, moment) {
     var instance = null,
         FALLBACK_KEY = 'RHCP-_POLYGLOT',
         STORAGE_KEY = 'RHCP-POLYGLOT',
@@ -8,14 +8,14 @@ define('polyglot', ['jquery'], function($) {
         POLYGLOT_SERVER = '//polyglot-redhataccess.itos.redhat.com/',
         hasStorage = ('localStorage' in window && window.localStorage !== null);
 
-        /**
-         * normalizes requested language.
-         * 1) if a language wasn't provided it will look in the window.portal
-         * object. If there isn't a window.portal object we will return english
-         * 2) ensures it is a valid language
-         * @param  {String} lang
-         * @return {String} normalized language
-         */
+    /**
+     * normalizes requested language.
+     * 1) if a language wasn't provided it will look in the window.portal
+     * object. If there isn't a window.portal object we will return english
+     * 2) ensures it is a valid language
+     * @param  {String} lang
+     * @return {String} normalized language
+     */
     var _normalizeLang = function(lang) {
             if (!lang && window.portal && window.portal.lang) {
                 lang = window.portal.lang;
@@ -43,6 +43,18 @@ define('polyglot', ['jquery'], function($) {
                 // 'query' the object in localStorage using the regex
                 if (needle.test(x)) {
                     obj[x] = haystack[x];
+                }
+            }
+        },
+        _objKeys = function(obj) {
+            if (Object.keys) {
+                return Object.keys(obj);
+            }
+            var result = [],
+                prop;
+            for (prop in obj) {
+                if (obj.hasOwnProperty(obj, prop)) {
+                    result.push(prop);
                 }
             }
         },
@@ -95,34 +107,46 @@ define('polyglot', ['jquery'], function($) {
             keys: keys,
             lang: lang
         }).done(function(data) {
-            if (typeof self._vals[lang] === 'undefined') {
-                self._vals[lang] = data[lang];
+            var keys = _objKeys(data),
+                prop;
+
+            for (var i = 0; i < keys.length; i++) {
+                lang = keys[i];
+                if (typeof self._vals[lang] === 'undefined') {
+                    self._vals[lang] = {};
+                }
+                for (prop in data[lang]) {
+                    self._vals[lang][prop] = data[lang][prop];
+                }
             }
-            dfd.resolve(data[lang]);
+            dfd.resolve(data);
         }).fail(function() {
-            dfd.resolve(self._fallback(keys));
+            dfd.resolve(self._fallback(keys, lang));
         });
         return dfd.promise();
     };
 
-    Polyglot.prototype._fallback = function(keys) {
+    Polyglot.prototype._fallback = function(keys, lang) {
         var fallback = _safeStore(FALLBACK_KEY);
         if (!fallback) {
             console.error('Couldn\'t fallback!');
             return;
         }
+        lang = _normalizeLang(lang);
         fallback = JSON.parse(fallback);
+        fallback = fallback[lang];
         keys = keys.split(',');
         var obj = {};
+        obj[lang] = {};
         var endsWithStar = /\*$/;
         for (var i = 0; i < keys.length; i++) {
             var key = keys[i];
             if (endsWithStar.test(key)) {
-                _searchForRegExp(fallback, new RegExp(key), obj);
+                _searchForRegExp(fallback, new RegExp(key), obj[lang]);
                 continue;
             }
             if (fallback[key]) {
-                obj[key] = fallback[key];
+                obj[lang][key] = fallback[key];
             }
         }
         return obj;
@@ -131,10 +155,16 @@ define('polyglot', ['jquery'], function($) {
     Polyglot.prototype._initFallback = function() {
         var hasFallback = _safeStore(FALLBACK_KEY);
         if (hasFallback) {
-            return;
+            var now = moment().utc();
+            var fallback = JSON.parse(hasFallback);
+            if (now.isBefore(moment(fallback.expires, 'YYYYMMDD').utc())) {
+                return;
+            }
         }
-        this._fetch('\\\\*', 'en').then(function(vals) {
+        this._fetch('.*', '.*').then(function(vals) {
             if (vals) {
+                var now = moment().utc();
+                vals.expires = now.add(1, 'week').format('YYYYMMDD');
                 _safeStore(FALLBACK_KEY, JSON.stringify(vals));
             }
         });
