@@ -14,7 +14,11 @@ var hydrateRegexes = function($in) {
     var endsWithStar = /\*$/;
     for (var i = 0; i < $in.length; i++) {
         if (endsWithStar.test($in[i])) {
-            $in[i] = new RegExp($in[i]);
+            try {
+                $in[i] = new RegExp($in[i]);
+            } catch (e) {
+                console.error(e);
+            }
         }
     }
 };
