@@ -46,10 +46,10 @@ var addCacheHeaders = function(req, res, cacheHit) {
         expires = ONE_MONTH_MS;
     }
     res.set({
-        //'Cache-Control': 'public, max-age=' + cc,
+        'Cache-Control': 'public, max-age=' + cc,
         'Access-Control-Allow-Origin': '*',
-        //'Date': new Date(Date.now()).toUTCString(),
-        //'Expires': new Date(Date.now() + expires).toUTCString()
+        'Date': new Date(Date.now()).toUTCString(),
+        'Expires': new Date(Date.now() + expires).toUTCString()
     });
     res.set('X-Cache', cacheHit ? 'HIT' : 'MISS');
 };
