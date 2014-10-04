@@ -3,7 +3,7 @@
 define(['jquery', 'moment'], function($, moment) {
     var instance = null,
         FALLBACK_KEY = 'RHCP-_POLYGLOT',
-        STORAGE_KEY = 'RHCP-POLYGLOT',
+        //STORAGE_KEY = 'RHCP-POLYGLOT',
         VALID_LANGS = ['en', 'de', 'es', 'fr', 'it', 'ja', 'ko', 'pt', 'ru', 'zh_CN'],
         POLYGLOT_SERVER = '//polyglot-redhataccess.itos.redhat.com/',
         hasStorage = ('localStorage' in window && window.localStorage !== null);
@@ -23,8 +23,9 @@ define(['jquery', 'moment'], function($, moment) {
             if (!lang) {
                 return 'en';
             }
-            var validLang = false;
-            for (var i = 0; i < VALID_LANGS.length; i++) {
+            var validLang = false,
+                i;
+            for (i = 0; i < VALID_LANGS.length; i++) {
                 // poor man's Array.indexOf
                 if (lang === VALID_LANGS[i]) {
                     validLang = true;
@@ -50,6 +51,7 @@ define(['jquery', 'moment'], function($, moment) {
             if (Object.keys) {
                 return Object.keys(obj);
             }
+            // poor man's Object.keys
             var result = [],
                 prop;
             for (prop in obj) {
@@ -115,12 +117,14 @@ define(['jquery', 'moment'], function($, moment) {
                 if (typeof self._vals[lang] === 'undefined') {
                     self._vals[lang] = {};
                 }
+                // Mixin returned vals to local vals
                 for (prop in data[lang]) {
                     self._vals[lang][prop] = data[lang][prop];
                 }
             }
             dfd.resolve(data);
         }).fail(function() {
+            // hail mary
             dfd.resolve(self._fallback(keys, lang));
         });
         return dfd.promise();
@@ -161,6 +165,7 @@ define(['jquery', 'moment'], function($, moment) {
                 return;
             }
         }
+        // fetch all keys and all lang and jam them in localStorage
         this._fetch('.*', '.*').then(function(vals) {
             if (vals) {
                 var now = moment().utc();
