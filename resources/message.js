@@ -55,7 +55,6 @@ var addCacheHeaders = function(req, res, cacheHit) {
 };
 
 exports.fetch = function(req, res) {
-
     var lang = 'en',
         keys,
         pretty = false;
@@ -74,7 +73,7 @@ exports.fetch = function(req, res) {
         keys = decodeURIComponent(req.query.keys);
         pretty = (req.query.pretty === 'true');
         lang = req.query.lang || lang;
-        keys = req.query.keys.split(',');
+        keys = req.query.keys && req.query.keys.split(',');
 
     }
     var query = {
