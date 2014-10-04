@@ -27,6 +27,10 @@ var message = require('./resources/message.js');
 app.post('/', message.fetch);
 app.get('/', message.fetch);
 
+app.get('/mu-1b945553-c98a6c01-6302bbe8-c751dcf8', function(req, res) {
+    res.send('42');
+});
+
 app.all('/*', function(req, res) {
     res.redirect('https://access.redhat.com/home');
 });
