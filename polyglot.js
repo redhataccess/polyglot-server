@@ -1,6 +1,14 @@
 /* globals define */
 
-define(['jquery', 'moment'], function($, moment) {
+(function(root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define(['jquery', 'moment'], factory);
+    } else {
+        // Browser globals
+        root.Polyglot = factory(root.jQuery, root.moment);
+    }
+}(this, function($, moment) {
     var instance = null,
         FALLBACK_KEY = 'RHCP-_POLYGLOT',
         //STORAGE_KEY = 'RHCP-POLYGLOT',
@@ -187,4 +195,4 @@ define(['jquery', 'moment'], function($, moment) {
     };
 
     return Polyglot.getInstance();
-});
+}));
