@@ -1,6 +1,5 @@
 var mongoose = require('mongoose');
 var Message = mongoose.model('Message');
-var crypto = require('crypto');
 var cache = require('memory-cache');
 var exec = require('child_process').exec;
 var _ = require('lodash-node');
@@ -87,8 +86,8 @@ exports.fetch = function(req, res) {
     // Sorting to ensure requests with different order will give same hash.
     query.key.$in.sort();
     query.lang.$in.sort();
-    var reqHash = crypto.createHash('md5').update(JSON.stringify(query)).digest('hex');
-    var cachedData = cache.get(reqHash);
+    var queryStr = JSON.stringify(query);
+    var cachedData = cache.get(queryStr);
     if (cachedData && req.get('Cache-Control') !== 'no-cache' && !pretty) {
         addCacheHeaders(req, res, true);
         return res.send(cachedData);
@@ -109,7 +108,7 @@ exports.fetch = function(req, res) {
             } else {
                 res.json(messages);
             }
-            cache.put(reqHash, messages);
+            cache.put(queryStr, messages);
         }
     });
 };
