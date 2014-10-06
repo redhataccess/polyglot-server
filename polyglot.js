@@ -126,8 +126,8 @@
 
         var url = POLYGLOT_SERVER;
         if ($.browser.msie) {
-            if (parseInt(ajq.browser.version, 10) < 10) {
-                url += '?callback=jsonp'
+            if (parseInt($.browser.version, 10) < 10) {
+                url += '?callback=?';
             }
         }
         $.getJSON(POLYGLOT_SERVER, queryData).done(function(data) {
