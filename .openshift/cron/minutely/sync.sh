@@ -5,5 +5,4 @@ if [ $(($(date +%M) % 15)) -ne 0 ]; then
 fi
 
 cd $OPENSHIFT_REPO_DIR
-
 node parse.js
