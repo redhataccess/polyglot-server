@@ -121,7 +121,7 @@
                 lang: lang
             };
         if (version) {
-            queryData.version = queryData;
+            queryData.version = version;
         }
 
         $.get(POLYGLOT_SERVER, queryData).done(function(data) {
