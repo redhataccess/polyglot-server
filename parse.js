@@ -23,7 +23,9 @@ function storeMessages() {
     // Would like to use upsert, but hard to do in bulk
     Message.collection.remove({}, function(err) {
         if (err) {
-            return console.log('Error dropping collection?');
+            console.log('Error dropping collection?');
+            process.exit(1);
+            return;
         }
         Message.collection.insert(messages, function(err, docs) {
             if (err) {
@@ -45,7 +47,9 @@ function parseFile(file, lang) {
         path: true
     }, function(err, obj) {
         if (err) {
-            return console.error(err);
+            console.error(err);
+            process.exit(1);
+            return;
         }
         if (lang === 'en') {
             englishObj = obj;
@@ -72,7 +76,9 @@ function parseFiles() {
     // We are going to parse the english messages first so they can be used as fallbacks in other languages.
     glob(DATA_DIR + '**/messages.properties', function(err, files) {
         if (err) {
-            return console.error(err);
+            console.error(err);
+            process.exit(1);
+            return;
         }
         if (!files.length || files.length > 1) {
             console.error('Wut.');
@@ -88,7 +94,9 @@ function parseFiles() {
             // We have the english strings, now we can work through the other languages.
             glob(DATA_DIR + '**/*_*.properties', function(err, files) {
                 if (err) {
-                    return console.error(err);
+                    console.error(err);
+                    process.exit(1);
+                    return;
                 }
                 // regex to extract the lang from the file name
                 // an example is `messages_fr.properties`
