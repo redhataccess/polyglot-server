@@ -124,7 +124,7 @@
             queryData.version = version;
         }
 
-        $.get(POLYGLOT_SERVER, queryData).done(function(data) {
+        $.getJSON(POLYGLOT_SERVER, queryData).done(function(data) {
             var keys = _objKeys(data),
                 prop;
 

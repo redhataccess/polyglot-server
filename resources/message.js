@@ -116,23 +116,9 @@ exports.fetch = function(req, res) {
                 res.set('Content-Type', 'application/json; charset=utf-8');
                 res.send(JSON.stringify(messages, undefined, '\t'));
             } else {
-                res.json(messages);
+                res.jsonp(messages);
             }
             cache.put(queryStr, messages);
         }
-    });
-};
-
-exports.sync = function(req, res) {
-    exec(__dirname + '/sync',
-        function(error, stdout, stderr) {
-            console.log('stdout: ' + stdout);
-            console.log('stderr: ' + stderr);
-            if (error !== null) {
-                console.log('exec error: ' + error);
-            }
-        });
-    res.json({
-        'status': 'ok'
     });
 };
