@@ -124,6 +124,12 @@
             queryData.version = version;
         }
 
+        var url = POLYGLOT_SERVER;
+        if ($.browser.msie) {
+            if (parseInt(ajq.browser.version, 10) < 10) {
+                url += '?callback=jsonp'
+            }
+        }
         $.getJSON(POLYGLOT_SERVER, queryData).done(function(data) {
             var keys = _objKeys(data),
                 prop;
