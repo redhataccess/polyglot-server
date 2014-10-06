@@ -35,6 +35,15 @@ var formatResults = function(results) {
     return results;
 };
 
+var addCorsHeaders = function(req, res) {
+    res.set({
+        'Access-Control-Allow-Origin': '*',
+        // IE does not respond unless there is a p3p header... even though it really
+        // doesn't do anything here
+        'p3p': 'CP="This is not a P3P policy!"'
+    });
+};
+
 var addCacheHeaders = function(req, res, cacheHit) {
     var cc = ONE_HOUR_SEC,
         expires = ONE_HOUR_MS;
@@ -46,7 +55,6 @@ var addCacheHeaders = function(req, res, cacheHit) {
     }
     res.set({
         'Cache-Control': 'public, max-age=' + cc,
-        'Access-Control-Allow-Origin': '*',
         'Date': new Date(Date.now()).toUTCString(),
         'Expires': new Date(Date.now() + expires).toUTCString()
     });
@@ -89,6 +97,7 @@ exports.fetch = function(req, res) {
     var queryStr = JSON.stringify(query);
     var cachedData = cache.get(queryStr);
     if (cachedData && req.get('Cache-Control') !== 'no-cache' && !pretty) {
+        addCorsHeaders(req, res);
         addCacheHeaders(req, res, true);
         return res.send(cachedData);
     }
@@ -101,6 +110,7 @@ exports.fetch = function(req, res) {
             res.send(err);
         } else {
             messages = formatResults(messages);
+            addCorsHeaders(req, res);
             addCacheHeaders(req, res, false);
             if (pretty) {
                 res.set('Content-Type', 'application/json; charset=utf-8');
