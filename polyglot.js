@@ -125,7 +125,7 @@
         }
 
         var url = POLYGLOT_SERVER;
-        if ($.browser.msie) {
+        if ($.browser && $.browser.msie) {
             if (parseInt($.browser.version, 10) < 10) {
                 url += '?callback=?';
             }
