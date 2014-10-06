@@ -100,23 +100,31 @@
      * @param  {string} lang The desired language
      * @return {Promise}
      */
-    Polyglot.prototype.t = function(keys, lang) {
+    Polyglot.prototype.t = function(keys, lang, version) {
         lang = _normalizeLang(lang);
         keys = _sortKeys(keys);
         var hash = lang + '_' + keys;
+        if (version) {
+            hash += ('_' + version);
+        }
         if (!this._fetchDfds[hash]) {
-            this._fetchDfds[hash] = this._fetch(keys, lang);
+            this._fetchDfds[hash] = this._fetch(keys, lang, version);
         }
         return this._fetchDfds[hash];
     };
 
-    Polyglot.prototype._fetch = function(keys, lang) {
+    Polyglot.prototype._fetch = function(keys, lang, version) {
         var dfd = new $.Deferred(),
-            self = this;
-        $.get(POLYGLOT_SERVER, {
-            keys: keys,
-            lang: lang
-        }).done(function(data) {
+            self = this,
+            queryData = {
+                keys: keys,
+                lang: lang
+            };
+        if (version) {
+            queryData.version = queryData;
+        }
+
+        $.get(POLYGLOT_SERVER, queryData).done(function(data) {
             var keys = _objKeys(data),
                 prop;
 
