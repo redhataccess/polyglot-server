@@ -130,7 +130,7 @@
                 url += '?callback=?';
             }
         }
-        $.getJSON(POLYGLOT_SERVER, queryData).done(function(data) {
+        $.getJSON(url, queryData).done(function(data) {
             var keys = _objKeys(data),
                 prop;
 
