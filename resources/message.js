@@ -38,6 +38,7 @@ var formatResults = function(results) {
 var addCorsHeaders = function(req, res) {
     res.set({
         'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
         // IE does not respond unless there is a p3p header... even though it really
         // doesn't do anything here
         'p3p': 'CP="This is not a P3P policy!"'
