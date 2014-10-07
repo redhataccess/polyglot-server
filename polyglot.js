@@ -130,13 +130,7 @@
             queryData.version = version;
         }
 
-        var url = POLYGLOT_SERVER;
-        if ($.browser && $.browser.msie) {
-            if (parseInt($.browser.version, 10) < 10) {
-                url += '?callback=?';
-            }
-        }
-        $.getJSON(url, queryData).done(function(data) {
+        $.getJSON(POLYGLOT_SERVER, queryData).done(function(data) {
             var keys = _objKeys(data),
                 prop;
 
