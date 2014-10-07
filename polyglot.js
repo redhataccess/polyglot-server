@@ -13,7 +13,8 @@
         FALLBACK_KEY = 'RHCP-_POLYGLOT',
         //STORAGE_KEY = 'RHCP-POLYGLOT',
         VALID_LANGS = ['en', 'de', 'es', 'fr', 'it', 'ja', 'ko', 'pt', 'ru', 'zh_CN'],
-        POLYGLOT_SERVER = '//polyglot-redhataccess.itos.redhat.com/',
+        POLYGLOT_SERVER = '//polyglot-etc.itos.redhat.com/',
+        useRelative = (window.location.hostname.indexOf('redhat.com') > 0),
         hasStorage = ('localStorage' in window && window.localStorage !== null);
 
     /**
@@ -92,6 +93,11 @@
         this._vals = {};
         // prepare for the worst
         this._initFallback();
+
+        if (useRelative) {
+            // Use relative path if we are in *.redhat.com
+            POLYGLOT_SERVER = '/etc/polyglot/';
+        }
     };
 
     /**
