@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ $(($(date +%M) % 15)) -ne 0 ]; then
+if [ $(($(date +%M) % 30)) -ne 0 ]; then
     exit
 fi
 
