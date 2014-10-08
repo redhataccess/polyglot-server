@@ -93,7 +93,7 @@
                 var item = line.split('=');
                 var key = item.shift();
                 var value = item.join();
-                parsed.en[key] = _escape(value);
+                parsed.en[key] = value;
             }
             return parsed;
         },
@@ -181,6 +181,7 @@
         if (!fallback) {
             console.error('Couldn\'t fallback!');
             this._getRaw(dfd);
+            return;
         }
         lang = _normalizeLang(lang);
         fallback = JSON.parse(fallback);
