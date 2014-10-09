@@ -100,7 +100,10 @@ exports.fetch = function(req, res) {
     if (cachedData && req.get('Cache-Control') !== 'no-cache' && !pretty) {
         addCorsHeaders(req, res);
         addCacheHeaders(req, res, true);
-        return res.jsonp(cachedData);
+        setTimeout(function () {
+            res.jsonp(cachedData);
+        }, 1000);
+        return;
     }
     hydrateRegexes(query.key.$in);
     hydrateRegexes(query.lang.$in);
