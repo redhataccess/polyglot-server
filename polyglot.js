@@ -92,7 +92,7 @@
                 }
                 var item = line.split('=');
                 var key = item.shift();
-                var value = item.join();
+                var value = item.join('=');
                 parsed.en[key] = value;
             }
             return parsed;
