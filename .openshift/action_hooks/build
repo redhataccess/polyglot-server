@@ -2,8 +2,8 @@
 
 cd $OPENSHIFT_REPO_DIR
 
-#mkdir -p "$OPENSHIFT_DATA_DIR"node_modules
+mkdir -p "$OPENSHIFT_DATA_DIR"node_modules
 
-#ln -s "$OPENSHIFT_DATA_DIR"node_modules node_modules
+ln -s "$OPENSHIFT_DATA_DIR"node_modules node_modules
 
 npm install --loglevel error
