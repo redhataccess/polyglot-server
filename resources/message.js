@@ -65,7 +65,8 @@ var addCacheHeaders = function(req, res, cacheHit) {
 exports.fetch = function(req, res) {
     var lang = 'en',
         keys,
-        pretty = false;
+        pretty = false,
+        latency = false;
     if (req._body) {
         // RESPONDING TO POST
         if (Array.isArray(req.body)) {
@@ -82,6 +83,12 @@ exports.fetch = function(req, res) {
         pretty = (req.query.pretty === 'true');
         lang = req.query.lang || lang;
         keys = (req.query.keys && req.query.keys.split(',')) || [];
+        if (req.query.latency) {
+            setTimeout(function () {
+                res.json({'msg': 'sloooooooow'});
+            }, 5000);
+            return;
+        }
 
     }
     var query = {
@@ -100,9 +107,7 @@ exports.fetch = function(req, res) {
     if (cachedData && req.get('Cache-Control') !== 'no-cache' && !pretty) {
         addCorsHeaders(req, res);
         addCacheHeaders(req, res, true);
-        setTimeout(function () {
-            res.jsonp(cachedData);
-        }, 2500);
+        res.jsonp(cachedData);
         return;
     }
     hydrateRegexes(query.key.$in);
