@@ -1,6 +1,7 @@
 #!/bin/bash
 
-if [ $(($(date +%M) % 30)) -ne 0 ]; then
+minute=$(date +%M)
+if [ $((10#$minute % 30)) -ne 0 ]; then
     exit
 fi
 
