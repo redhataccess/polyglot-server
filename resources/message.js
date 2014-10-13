@@ -89,7 +89,7 @@ function searchCache(query, req, res, pretty) {
         if (reply && req.get('Cache-Control') !== 'no-cache' && !pretty) {
             addCorsHeaders(req, res);
             addCacheHeaders(req, res, true);
-            res.jsonp(reply);
+            res.jsonp(JSON.parse(reply));
             return;
         }
         performQuery(query, req,res, pretty);
