@@ -6,7 +6,7 @@ var properties = require('properties');
 var glob = require('glob');
 require('./lib/db');
 var Q = require('q');
-var cache = require('memory-cache');
+var client = require('./lib/redis');
 var Download = require('download');
 var extend = require('util')._extend;
 
@@ -35,7 +35,7 @@ function storeMessages() {
             }
             console.log('Collection saved!');
             // Nuke our cache.
-            cache.clear();
+            client.flushall([], function(){});
             process.exit(0);
         });
     });
