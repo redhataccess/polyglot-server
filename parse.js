@@ -115,17 +115,18 @@ function parseFiles() {
 }
 
 var DL_PATH = 'https://access.redhat.com/webassets/avalon/j/messages/';
+var bust = ('?b=' + Date.now());
 var download = new Download()
-    .get(DL_PATH + 'messages.properties')
-    .get(DL_PATH + 'messages_de.properties')
-    .get(DL_PATH + 'messages_es.properties')
-    .get(DL_PATH + 'messages_fr.properties')
-    .get(DL_PATH + 'messages_it.properties')
-    .get(DL_PATH + 'messages_ja.properties')
-    .get(DL_PATH + 'messages_ko.properties')
-    .get(DL_PATH + 'messages_pt.properties')
-    .get(DL_PATH + 'messages_ru.properties')
-    .get(DL_PATH + 'messages_zh_CN.properties')
+    .get(DL_PATH + 'messages.properties' + bust)
+    .get(DL_PATH + 'messages_de.properties' + bust)
+    .get(DL_PATH + 'messages_es.properties' + bust)
+    .get(DL_PATH + 'messages_fr.properties' + bust)
+    .get(DL_PATH + 'messages_it.properties' + bust)
+    .get(DL_PATH + 'messages_ja.properties' + bust)
+    .get(DL_PATH + 'messages_ko.properties' + bust)
+    .get(DL_PATH + 'messages_pt.properties' + bust)
+    .get(DL_PATH + 'messages_ru.properties' + bust)
+    .get(DL_PATH + 'messages_zh_CN.properties' + bust)
     .dest(DATA_DIR);
 
 download.run(function(err) {
