@@ -74,7 +74,7 @@ function parseFile(file, lang) {
 
 function parseFiles() {
     // We are going to parse the english messages first so they can be used as fallbacks in other languages.
-    glob(DATA_DIR + '**/messages.properties', function(err, files) {
+    glob(DATA_DIR + '**/messages.properties*', function(err, files) {
         if (err) {
             console.error(err);
             process.exit(1);
@@ -127,6 +127,9 @@ var download = new Download()
     .get(DL_PATH + 'messages_pt.properties' + bust)
     .get(DL_PATH + 'messages_ru.properties' + bust)
     .get(DL_PATH + 'messages_zh_CN.properties' + bust)
+    .rename(function (path) {
+        path.extname = '.properties';
+    })
     .dest(DATA_DIR);
 
 download.run(function(err) {
