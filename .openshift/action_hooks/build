@@ -2,8 +2,9 @@
 
 cd $OPENSHIFT_REPO_DIR
 
-mkdir -p "$OPENSHIFT_DATA_DIR"node_modules
-
-ln -s "$OPENSHIFT_DATA_DIR"node_modules node_modules
+if [ ${OPENSHIFT_GEAR_UUID} == ${USER} ]; then
+    mkdir -p "$OPENSHIFT_DATA_DIR"node_modules
+    ln -s "$OPENSHIFT_DATA_DIR"node_modules node_modules
+fi
 
 npm install --loglevel error
