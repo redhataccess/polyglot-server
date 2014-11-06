@@ -3,9 +3,11 @@
 HOME=$OPENSHIFT_REPO_DIR
 cd $OPENSHIFT_REPO_DIR
 
-if [ "$OPENSHIFT_GEAR_UUID" == "$USER" ]; then
+echo $OPENSHIFT_GEAR_UUID
+echo $USER
+#if [ "$OPENSHIFT_GEAR_UUID" == "$USER" ]; then
     mkdir -p "$OPENSHIFT_DATA_DIR"node_modules
     ln -s "$OPENSHIFT_DATA_DIR"node_modules node_modules
-fi
+#fi
 
 npm install --loglevel error
