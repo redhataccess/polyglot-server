@@ -74,7 +74,7 @@ function performQuery(query, req, res, pretty) {
             res.send(err);
         } else {
             messages = formatResults(messages);
-            addCorsHeaders(req, res);
+            //addCorsHeaders(req, res);
             addCacheHeaders(req, res, false);
             if (pretty) {
                 res.set('Content-Type', 'application/json; charset=utf-8');
@@ -91,7 +91,7 @@ function searchCache(query, req, res, pretty) {
     var queryStr = JSON.stringify(query);
     client.get(queryStr, function(err, reply) {
         if (reply && req.get('Cache-Control') !== 'no-cache' && !pretty) {
-            addCorsHeaders(req, res);
+            //addCorsHeaders(req, res);
             addCacheHeaders(req, res, true);
             res.jsonp(JSON.parse(reply));
             return;
