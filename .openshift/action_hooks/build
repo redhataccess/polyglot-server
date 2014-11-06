@@ -1,5 +1,6 @@
 #!/bin/bash
-
+# Change home directory (bower puts a lot of cache and tmp directories here)
+HOME=$OPENSHIFT_REPO_DIR
 cd $OPENSHIFT_REPO_DIR
 
 if [ "$OPENSHIFT_GEAR_UUID" == "$USER" ]; then

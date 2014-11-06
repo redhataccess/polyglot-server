@@ -20,11 +20,7 @@ if ('development' === app.get('env')) {
     app.use(morgan('dev'));
 } else {
     morgan.format('combined+', ':remote-addr - :remote-user [:date] ":method :url" :status :response-time ms - :res[content-length] ":referrer" ":user-agent"');
-    app.use(morgan('combined+', {
-        skip: function(req, res) {
-            return res.statusCode < 400;
-        }
-    }));
+    app.use(morgan('combined+'));
 }
 
 var message = require('./resources/message.js');
