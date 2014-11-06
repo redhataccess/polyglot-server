@@ -55,7 +55,7 @@ function addCacheHeaders(req, res, cacheHit) {
     }
     res.set({
         'Cache-Control': 'public, max-age=' + cc,
-        'Edge-Control': 'max-age=300',
+        'Edge-control': '!no-store, max-age=10m',
         'Date': new Date(Date.now()).toUTCString(),
         'Expires': new Date(Date.now() + expires).toUTCString()
     });
