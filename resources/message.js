@@ -8,6 +8,8 @@ var ONE_HOUR_SEC = (60 * 60),
     ONE_MONTH_SEC = (60 * 60 * 24 * 30),
     ONE_MONTH_MS = (ONE_MONTH_SEC * 1000);
 
+var dateTest = new Date(Date.now()).toUTCString();
+
 function hydrateRegexes($in) {
     var endsWithStar = /\*$/;
     for (var i = 0; i < $in.length; i++) {
@@ -56,6 +58,7 @@ function addCacheHeaders(req, res, cacheHit) {
     res.set({
         'Cache-Control': 'public, max-age=' + cc,
         'Edge-control': '!no-store, max-age=10m',
+        'Last-Modified': dateTest,
         'Date': new Date(Date.now()).toUTCString()
         //'Expires': new Date(Date.now() + expires).toUTCString()
     });
