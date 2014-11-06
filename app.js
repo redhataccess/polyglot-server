@@ -28,6 +28,9 @@ app.post('/', message.fetch);
 app.get('/', message.fetch);
 
 app.get('/mu-1b945553-c98a6c01-6302bbe8-c751dcf8', function(req, res) {
+    res.set({
+        'Edge-control': 'max-age=10m'
+    });
     res.send('42');
 });
 
