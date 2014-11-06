@@ -8,8 +8,6 @@ var ONE_HOUR_SEC = (60 * 60),
     ONE_MONTH_SEC = (60 * 60 * 24 * 30),
     ONE_MONTH_MS = (ONE_MONTH_SEC * 1000);
 
-var dateTest = new Date(Date.now()).toUTCString();
-
 function hydrateRegexes($in) {
     var endsWithStar = /\*$/;
     for (var i = 0; i < $in.length; i++) {
@@ -57,10 +55,9 @@ function addCacheHeaders(req, res, cacheHit) {
     }
     res.set({
         'Cache-Control': 'public, max-age=' + cc,
-        'Edge-control': '!no-store, max-age=10m',
-        'Last-Modified': dateTest,
-        'Date': new Date(Date.now()).toUTCString()
-        //'Expires': new Date(Date.now() + expires).toUTCString()
+        'Edge-control': 'max-age=10m',
+        'Date': new Date(Date.now()).toUTCString(),
+        'Expires': new Date(Date.now() + expires).toUTCString()
     });
     //res.set('X-Cache', cacheHit ? 'HIT' : 'MISS');
 }
@@ -74,7 +71,7 @@ function performQuery(query, req, res, pretty) {
             res.send(err);
         } else {
             messages = formatResults(messages);
-            //addCorsHeaders(req, res);
+            addCorsHeaders(req, res);
             addCacheHeaders(req, res, false);
             if (pretty) {
                 res.set('Content-Type', 'application/json; charset=utf-8');
@@ -91,7 +88,7 @@ function searchCache(query, req, res, pretty) {
     var queryStr = JSON.stringify(query);
     client.get(queryStr, function(err, reply) {
         if (reply && req.get('Cache-Control') !== 'no-cache' && !pretty) {
-            //addCorsHeaders(req, res);
+            addCorsHeaders(req, res);
             addCacheHeaders(req, res, true);
             res.jsonp(JSON.parse(reply));
             return;
